@@ -65,9 +65,9 @@ function pareto_exponent(h::Histogram, frac_init::Float64, frac_end::Float64)
     y = h.weights
     y = y[floor(Int, frac_init*nbins) - 1 : floor(Int, frac_end*nbins) - 1]
     par_pow = power_fit(x, y)
-    p = plot(h, xscale=:log10, yscale=:log10, fillalpha=.5, linewidth=0, linecolor=:match, c=:gray)
+    p = plot(h, xscale=:log10, yscale=:log10, fillalpha=.5, linewidth=0, linecolor=:match, c=:gray, xlims=(h.edges[1][1], h.edges[1][end]))
     xplot = range(x[1], x[end], length=100)
-    plot!(xplot, par_pow[1] .* xplot .^ par_pow[2], width=4)#, xlims=(h.edges[1][floor(Int, plot_frac_init*nbins)], h.edges[1][end]));
+    plot!(xplot, par_pow[1] .* xplot .^ par_pow[2], width=4);
     return -par_pow[2], p
 end
 
