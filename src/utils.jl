@@ -58,7 +58,7 @@ function pdf_norm_wealth(sim::SDEsim, t::Int, nbins::Int)
 end
 
 
-function pareto_exponent(h::Histogram, frac_init::Float64, frac_end::Float64)
+function pareto_exponent(h::Histogram, frac_init::Float64, frac_end::Float64, plot_frac_init::Float64)
     nbins = length(h.edges[1])
     x = h.edges[1][2:end] .- (h.edges[1][2:end] .- h.edges[1][1:end-1]) ./ 2
     x = x[floor(Int, frac_init*nbins) - 1 : floor(Int, frac_end*nbins) - 1]
@@ -67,12 +67,18 @@ function pareto_exponent(h::Histogram, frac_init::Float64, frac_end::Float64)
     par_pow = power_fit(x, y)
     p = plot(h, xscale=:log10, yscale=:log10, fillalpha=.5, linewidth=0, linecolor=:match, c=:gray)
     xplot = range(x[1], x[end], length=100)
-    plot!(xplot, par_pow[1] .* xplot .^ par_pow[2], width=4, xlims=(h.edges[1][floor(Int, .5*nbins)], h.edges[1][end]));
+    plot!(xplot, par_pow[1] .* xplot .^ par_pow[2], width=4, xlims=(h.edges[1][floor(Int, plot_frac_init*nbins)], h.edges[1][end]));
     return -par_pow[2], p
 end
 
 
 function pareto_fit(sol::SDEsol, ts::UnitRange{Int64}, nbins::Int, frac_init::Float64, frac_end::Float64)
     h = pdf_norm_wealth(sol, ts, nbins)
-    return pareto_exponent(h, frac_init, frac_end)
+    return pareto_exponent(h, frac_init, frac_end, .2)
+end
+
+
+function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Float64, frac_end::Float64)
+    h = pdf_norm_wealth(sim, ts, nbins)
+    return pareto_exponent(h, frac_init, frac_end, .5)
 end
