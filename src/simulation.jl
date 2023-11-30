@@ -61,6 +61,8 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
         sol_mil = BM_MilSDE(p, dt, x_init, t_init, t_end)
 
         sim.xs[idx_sim, :, :] .= sol_mil.xs
+
+        println("simulation $(i) ended", idx_sim)
     end
 
     return sim
