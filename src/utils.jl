@@ -78,6 +78,18 @@ function pareto_fit(sol::SDEsol, t::Int, nbins::Int, frac_init::Float64, frac_en
 end
 
 
+function pareto_fit(sol::SDEsol, ts::UnitRange{Int64}, nbins::Int, frac_init::Float64, frac_end::Float64)
+    h = pdf_norm_wealth(sol, ts, nbins)
+    return pareto_exponent(h, frac_init, frac_end)
+end
+
+
+function pareto_fit(sim::SDEsim, t::Int, nbins::Int, frac_init::Float64, frac_end::Float64)
+    h = pdf_norm_wealth(sim, t, nbins)
+    return pareto_exponent(h, frac_init, frac_end)
+end
+
+
 function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Float64, frac_end::Float64)
     h = pdf_norm_wealth(sim, ts, nbins)
     return pareto_exponent(h, frac_init, frac_end)
