@@ -72,8 +72,8 @@ function pareto_exponent(h::Histogram, frac_init::Float64, frac_end::Float64)
 end
 
 
-function pareto_fit(sol::SDEsol, ts::UnitRange{Int64}, nbins::Int, frac_init::Float64, frac_end::Float64)
-    h = pdf_norm_wealth(sol, ts, nbins)
+function pareto_fit(sol::SDEsol, t::Int, nbins::Int, frac_init::Float64, frac_end::Float64)
+    h = pdf_norm_wealth(sol, t, nbins)
     return pareto_exponent(h, frac_init, frac_end)
 end
 
