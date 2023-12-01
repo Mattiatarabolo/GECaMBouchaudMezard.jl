@@ -7,7 +7,7 @@ using Graphs
 using Plots, StatsPlots
 using JLD2
 
-export BM_MilSDE, sim_BM_MilSDE, idx_t, pareto_fit
+export BM_MilSDE, sim_BM_MilSDE,BM_MilSDE_JLD, sim_BM_MilSDE_JLD, idx_t, pareto_fit
 
 include("types.jl")
 include("utils.jl")
