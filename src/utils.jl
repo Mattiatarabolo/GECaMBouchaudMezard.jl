@@ -112,7 +112,7 @@ function save_JLD(sol, p, dt, t_end, i)
     N = size(p[1])[1]
     σ² = p[2]
 
-    dirpath = "./data/sim/N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end)_$(i)"
+    dirpath = "./data/sim/N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end)"
 
     mkpath(dirpath)
 
