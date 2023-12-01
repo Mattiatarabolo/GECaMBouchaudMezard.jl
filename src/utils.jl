@@ -82,3 +82,26 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
     h = pdf_norm_wealth(sim, ts, nbins)
     return pareto_exponent(h, frac_init, frac_end)
 end
+
+
+function save_JLD(sol, p, dt, t_end)
+    K = Int(p[1][1,1])
+    N = size(p[1])[1]
+    σ² = p[2]
+
+    jldopen("./data/single_sol/sol_N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end).jld", "w") do f
+        write(f, "sol", sol)
+    end
+end
+
+
+function save_JLD(sol, p, dt, t_end, i)
+    K = Int(p[1][1,1])
+    N = size(p[1])[1]
+    σ² = p[2]
+
+    jldopen("./data/sim/N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end)_$(i)/sol_N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end)_$(i).jld", "w") do f
+        write(f, "sol", sol)
+        println("writing sol_N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end)_$(i) on thread $(Threads.threadid())")
+    end
+end
