@@ -116,8 +116,7 @@ function save_JLD(sol, p, dt, t_end, i, thread_id)
 
     mkpath(dirpath)
 
-    jldopen(dirpath*"/sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld", "w") do f
-        write(f, "sol", sol)
-    end
+    @save dirpath*"/sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" sol
+
     println("writing sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
 end
