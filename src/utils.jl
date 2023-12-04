@@ -104,9 +104,9 @@ function save_JLD(sol, p, dt, t_end, thread_id)
     dirpath = "./data/single_sol"
     mkpath(dirpath)
 
-    @save dirpath*"/sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
+    @save dirpath*"/sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
     
-    println("writing sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(thread_id)")
+    println("writing sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(thread_id)")
 end
 
 
@@ -115,11 +115,11 @@ function save_JLD(sol, p, dt, t_end, i, thread_id)
     N = size(p[1])[1]
     σ² = p[2]
 
-    dirpath = "./data/sim/N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)"
+    dirpath = "./data/sim/N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)"
 
     mkpath(dirpath)
 
-    @save dirpath*"/sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" sol
+    @save dirpath*"/sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" sol
 
-    println("writing sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
+    println("writing sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
 end
