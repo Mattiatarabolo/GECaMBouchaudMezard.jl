@@ -16,7 +16,11 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
 Plots = "1"
+JLD2 = "0.4"
+Graphs = "1"
+CurveFit = "0.6"
 StatsBase = "0.34"
+StatsPlots = "0.15"
 julia = "1"
 
 [extras]
