@@ -38,7 +38,7 @@ function BM_MilSDE(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
+function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -70,7 +70,7 @@ function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::F
         sol.xs[:, τ] .= x/mean(x)
     end
 
-    save_JLD(sol, p, dt, t_end)
+    save_JLD(sol, p, dt, t_end, thread_id)
 end
 
 

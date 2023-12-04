@@ -96,14 +96,17 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
 end
 
 
-function save_JLD(sol, p, dt, t_end)
+function save_JLD(sol, p, dt, t_end, thread_id)
     K = Int(p[1][1,1])
     N = size(p[1])[1]
     σ² = p[2]
 
-    jldopen("./data/single_sol/sol_N$(N)_K$(K)_s2$(σ²)_dt$(dt)_T$(t_end).jld", "w") do f
-        write(f, "sol", sol)
-    end
+    dirpath = "./data/single_sol"
+    mkpath(dirpath)
+
+    @save dirpath*"/sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
+    
+    println("writing sol_N-$(N)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(thread_id)")
 end
 
 

@@ -2,12 +2,11 @@ using Plots, GraphRecipes, StatsPlots
 using GECaMBouchaudMezard
 using Graphs
 using Random
-using JLD
+using JLD2
+using BenchmarkTools
 
 
-NV = 300 # number of graph vertices
-K = 3 # degree
-σ² = 2.0 # noise amplitude
+NV = 5000 # number of graph vertices
 J = 1.0; # coupling
 
 seed = 1234
@@ -16,30 +15,23 @@ x_init = ones(NV)#rand(NV,1).*10 .+ 1
 
 dt = 0.01
 t_init = 0.0
-t_end = 500.0;
+t_end = 2000.0;
 
+Ks = [3, 10, 100, 1000]
+σs = [Vector(range(2*(K-1)-1.0, 2*(K-1)+1.0, length=10)) for K in Ks]  # σ²_c ≈ 2(K-1)J from MF
 
-# generate a random K-regualr graph with NV vertices
-G = random_regular_graph(NV, K)
+for K in Ks
+    Threads.@threads for σ² in σs[K]
+        # generate a random K-regualr graph with NV vertices
+        G = random_regular_graph(NV, K)
 
-Amod = adjacency_matrix(G)
+        Amod = adjacency_matrix(G)
 
-for i in 1:NV
-    Amod[i,i] = -Float64(K)
-end
+        for i in 1:NV
+            Amod[i,i] = -Float64(K)
+        end
 
-p = (J .* Amod, σ²);
+        p = (J .* Amod, σ²)
 
-
-nsim = 20
-
-sim = sim_BM_MilSDE(p, dt, x_init, t_init, t_end, seed, nsim);
-
-
-nbins = 100
-
-μ, pfit = pareto_fit(sim, idx_t(1950, dt):idx_t(t_end, dt), nbins, .8, .99)
-
-println(μ)
-
-plot(pfit)
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, Threads.threadid())
+    end
