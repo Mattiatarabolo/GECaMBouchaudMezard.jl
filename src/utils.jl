@@ -13,7 +13,7 @@ function pdf_norm_wealth(sol::SDEsol, ts::UnitRange{Int64}, nbins::Int)
     edge_r = log10(maximum(wealths))
     edges = 10.0 .^ (range(edge_l, edge_r, length=nbins))
     
-    return normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
+    return StatsBase.normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
 end
 
 
@@ -24,7 +24,7 @@ function pdf_norm_wealth(sol::SDEsol, t::Int, nbins::Int)
     edge_r = log10(maximum(wealths))
     edges = 10.0 .^ (range(edge_l, edge_r, length=nbins))
     
-    return normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
+    return StatsBase.normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
 end
 
 
@@ -40,7 +40,7 @@ function pdf_norm_wealth(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int)
     edge_r = log10(maximum(wealths))
     edges = 10.0 .^ (range(edge_l, edge_r, length=nbins))
     
-    return normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
+    return StatsBase.normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
 end
 
 
@@ -54,7 +54,7 @@ function pdf_norm_wealth(sim::SDEsim, t::Int, nbins::Int)
     edge_r = log10(maximum(wealths))
     edges = 10.0 .^ (range(edge_l, edge_r, length=nbins))
     
-    return normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
+    return StatsBase.normalize(StatsBase.fit(Histogram, wealths, edges), mode=:pdf)
 end
 
 
