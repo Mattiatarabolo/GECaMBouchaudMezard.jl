@@ -71,8 +71,6 @@ function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::F
     end
 
     save_JLD(sol, p, dt, t_end)
-
-
 end
 
 
@@ -83,7 +81,7 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
     sim = SDEsim(Vector(ts), N, dt, nsim)
 
     Threads.@threads for idx_sim in 1:nsim
-        G = random_regular_graph(NV, K)
+        G = random_regular_graph(N, K)
         Amod = adjacency_matrix(G)
         for i in 1:NV
             Amod[i,i] = -Float64(K)
@@ -103,8 +101,10 @@ end
 
 
 function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int)
+    N = length(x_init)
+    
     Threads.@threads for idx_sim in 1:nsim
-        G = random_regular_graph(NV, K)
+        G = random_regular_graph(N, K)
         Amod = adjacency_matrix(G)
         for i in 1:NV
             Amod[i,i] = -Float64(K)
@@ -146,6 +146,6 @@ function sim_BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, d
         Random.seed!(seed + idx_sim)
         sol = BM_MilSDE(p, dt, x_init, t_init, t_end)
 
-        save_JLD(sol, p, dt, t_end, idx_sim)
+        save_JLD(sol, p, dt, t_end, idx_sim, Threads.threadid())
     end
 end
