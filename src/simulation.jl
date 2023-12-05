@@ -67,6 +67,11 @@ function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::F
 
         # Milstein update
         x .= x + Δx_det.*dt + Δx_stoch.*ΔW + Δx_Mil.*(ΔW.^2 .- dt)
+        if any(isnan, x)
+            throw(DomainError(x, "NaN value obtained"))
+        elseif any(isinf, x)
+            throw(DomainError(x, "Inf value obtained"))
+        end
         sol.xs[:, τ] .= x/mean(x)
     end
 
