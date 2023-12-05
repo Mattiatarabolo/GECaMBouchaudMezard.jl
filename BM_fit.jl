@@ -21,13 +21,18 @@ Ks = [3, 10, 100, 1000]
 dirpath_sol = "./data/single_sol/sol"
 mkpath(dirpath_sol)
 dirpath_fit = "./data/single_sol/fit"
-mkpath(dirpath_save)
+mkpath(dirpath_fit)
 nbins = 100
 
 for (iK, K) in enumerate(Ks)
     Threads.@threads for σ² in σs[iK]
-        @load dirpath_sol*"/sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
-        μ, pfit = pareto_fit(sol, idx_t(1800.0):idx_t(t_end), nbins, .85, .98)
-        @save dirpath_fit*"/fit_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" μ pfit
+        @load dirpath_sol*"/sol_N-$(NV)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
+        println("loading solution sol_N-$(NV)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(Threads.threadid())")
+        
+        h = pdf_norm_wealth(sol, idx_t(1800.0, dt):idx_t(t_end, dt), nbins)
+        μ, pfit = pareto_exponent(h, .85, .98)
+        
+        @save dirpath_fit*"/fit_N-$(NV)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" μ pfit
+        println("writing fit fit_N-$(NV)_K-$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(Threads.threadid())")
     end
 end
