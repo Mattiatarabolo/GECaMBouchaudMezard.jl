@@ -3,15 +3,15 @@ function Wiener_diag!(ΔW::Array{Float64}, Δt::Float64)
 end
 
 
-function BM_MilSDE(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
+function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    f!(dx, x, p) = mul!(dx, p[1], x)
-    g!(dx, x, p) = mul!(dx, sqrt(p[2]), x)
-    g_Mil!(dx, x, p) = mul!(dx, p[2]/2, x)
+    f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
+    g!(dx, x, p) = mul!(dx, sqrt(p[3]), x)
+    g_Mil!(dx, x, p) = mul!(dx, p[3]/2, x)
 
     sol = SDEsol(Vector(ts), N, dt, p)
 
@@ -38,15 +38,15 @@ function BM_MilSDE(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    f!(dx, x, p) = mul!(dx, p[1], x)
-    g!(dx, x, p) = mul!(dx, sqrt(p[2]), x)
-    g_Mil!(dx, x, p) = mul!(dx, p[2]/2, x)
+    f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
+    g!(dx, x, p) = mul!(dx, sqrt(p[3]), x)
+    g_Mil!(dx, x, p) = mul!(dx, p[3]/2, x)
 
     sol = SDEsol(Vector(ts), N, dt, p)
 
@@ -92,7 +92,7 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
             Amod[i,i] = -Float64(K)
         end
 
-        p = (J .* Amod, σ²)
+        p = (J, Amod, σ²)
         sim.pars[idx_sim] = p
 
         Random.seed!(seed)
@@ -115,7 +115,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
             Amod[i,i] = -Float64(K)
         end
 
-        p = (J .* Amod, σ²)
+        p = (J, Amod, σ²)
 
         Random.seed!(seed)
         sol = BM_MilSDE(p, dt, x_init, t_init, t_end)
@@ -125,7 +125,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 end
 
 
-function sim_BM_MilSDE(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
+function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -144,7 +144,7 @@ function sim_BM_MilSDE(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::F
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
         
     Threads.@threads for idx_sim in 1:nsim
 
