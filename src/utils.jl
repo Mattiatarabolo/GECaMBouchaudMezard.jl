@@ -101,7 +101,7 @@ function save_JLD(sol, p, dt, t_end, thread_id)
     N = size(p[1])[1]
     σ² = p[2]
 
-    dirpath = "./data/single_sol"
+    dirpath = "./data/single_sol/sol"
     mkpath(dirpath)
 
     @save dirpath*"/sol_N-$(N)_K$(K)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
