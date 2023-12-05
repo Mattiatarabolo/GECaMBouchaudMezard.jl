@@ -3,7 +3,7 @@ function Wiener_diag!(ΔW::Array{Float64}, Δt::Float64)
 end
 
 
-function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
+function BM_MilSDE(p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -38,7 +38,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, 
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -125,7 +125,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 end
 
 
-function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
+function sim_BM_MilSDE(p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -144,7 +144,7 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float6
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Float64, Int64}, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, seed::Int, nsim::Int)
         
     Threads.@threads for idx_sim in 1:nsim
 
