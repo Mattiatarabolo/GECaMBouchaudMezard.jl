@@ -71,7 +71,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
             println("ERROR: Inf evaluated")
             throw(DomainError(x, "Inf value obtained"))
         end
-        xs[:, τ] = @SVector x/mean(x)
+        xs[:, τ] = x/mean(x)
     end
 
     save_JLD(xs, p, dt, t_end, thread_id)
