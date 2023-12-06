@@ -63,7 +63,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         Wiener_diag!(ΔW, dt)
 
         # Milstein update
-        x = @SVector x + Δx_det*dt + Δx_stoch.*ΔW + Δx_Mil*(ΔW^2 - dt)
+        x = x + Δx_det*dt + Δx_stoch.*ΔW + Δx_Mil*(ΔW^2 - dt)
         if any(isnan, x)
             println("ERROR: NaN evaluated")
             throw(DomainError(x, "NaN value obtained"))
