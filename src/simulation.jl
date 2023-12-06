@@ -78,7 +78,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64, thread_id)
+function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64, thread_id)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -96,7 +96,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     ΔW = @SVector zeros(N)
 
     # integration loop
-    @showprogress dt=1 desc="Computing..." for τ in 2:T
+    ProgressMeter.@showprogress dt=1 desc="Computing..." for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
