@@ -48,10 +48,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
-    g!(dx, x, p) = mul!(dx, sqrt(p[3]), x)
-    g_Mil!(dx, x, p) = mul!(dx, p[3]/2, x)
-
     sol = SDEsol(Vector(ts), N, dt, p)
 
     sol.xs[:, 1] .= x_init
