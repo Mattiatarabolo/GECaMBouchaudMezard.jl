@@ -78,7 +78,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64, thread_id)
+function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
@@ -103,7 +103,7 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
         Wiener_diag!(ΔW, dt)
 
         # Milstein update
-        x = x + Δx_det*dt + Δx_stoch.*ΔW + Δx_Mil*(ΔW^2 - dt)
+        x = x + Δx_det.*dt + Δx_stoch.*ΔW + Δx_Mil.*(ΔW.^2 - dt)
         if any(isnan, x)
             println("ERROR: NaN evaluated")
             throw(DomainError(x, "NaN value obtained"))
@@ -114,7 +114,7 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
         xs[:, τ] = x/mean(x)
     end
 
-    save_JLD(xs, p, dt, t_end, thread_id)
+    save_JLD(xs, p, dt, t_end, 1)
 end
 
 
