@@ -44,16 +44,16 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    xs = @SMatrix zeros(N, T)
+    xs = @MMatrix zeros(N, T)
 
     xs[:, 1] = x_init
    
-    x = @SVector zeros(N)
+    x = @MVector zeros(N)
     x =  x_init
-    Δx_det = @SVector zeros(N)
-    Δx_stoch = @SVector zeros(N)
-    Δx_Mil = @SVector zeros(N)
-    ΔW = @SVector zeros(N)
+    Δx_det = @MVector zeros(N)
+    Δx_stoch = @MVector zeros(N)
+    Δx_Mil = @MVector zeros(N)
+    ΔW = @MVector zeros(N)
 
     # integration loop
     for τ in 2:T
@@ -84,16 +84,16 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    xs = @SMatrix zeros(N, T)
+    xs = @MMatrix zeros(N, T)
 
     xs[:, 1] = x_init
    
-    x = @SVector zeros(N)
+    x = @MVector zeros(N)
     x =  x_init
-    Δx_det = @SVector zeros(N)
-    Δx_stoch = @SVector zeros(N)
-    Δx_Mil = @SVector zeros(N)
-    ΔW = @SVector zeros(N)
+    Δx_det = @MVector zeros(N)
+    Δx_stoch = @MVector zeros(N)
+    Δx_Mil = @MVector zeros(N)
+    ΔW = @MVector zeros(N)
     println("startl loop")
 
     # integration loop
