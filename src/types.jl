@@ -1,6 +1,6 @@
 struct SDEsol
     t::Vector{Float64}
-    xs::SMatrix{N, N, Float64, N*N}
+    xs::Array{Float64, 2}
     dt::Float64
     par::Tuple{Float64, SparseMatrixCSC, Float64}
 end
