@@ -78,6 +78,46 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64, thread_id)
+    N = length(x_init)
+    
+    ts = range(t_init, t_end, step=dt)
+    T = length(ts)
+
+    xs = @SMatrix zeros(N, T)
+
+    xs[:, 1] = x_init
+   
+    x = @SVector zeros(N)
+    x =  x_init
+    Δx_det = @SVector zeros(N)
+    Δx_stoch = @SVector zeros(N)
+    Δx_Mil = @SVector zeros(N)
+    ΔW = @SVector zeros(N)
+
+    # integration loop
+    @showprogress dt=1 desc="Computing..." for τ in 2:T
+        f!(Δx_det, x, p)
+        g!(Δx_stoch, x, p)
+        g_Mil!(Δx_Mil, x, p)
+        Wiener_diag!(ΔW, dt)
+
+        # Milstein update
+        x = x + Δx_det*dt + Δx_stoch.*ΔW + Δx_Mil*(ΔW^2 - dt)
+        if any(isnan, x)
+            println("ERROR: NaN evaluated")
+            throw(DomainError(x, "NaN value obtained"))
+        elseif any(isinf, x)
+            println("ERROR: Inf evaluated")
+            throw(DomainError(x, "Inf value obtained"))
+        end
+        xs[:, τ] = x/mean(x)
+    end
+
+    save_JLD(xs, p, dt, t_end, thread_id)
+end
+
+
 function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int)
     N = length(x_init)
     

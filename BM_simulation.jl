@@ -5,6 +5,7 @@ using Random
 using JLD2
 using BenchmarkTools
 using QuadGK
+using ProgressMeter
 
 
 NV = 5000 # number of graph vertices
