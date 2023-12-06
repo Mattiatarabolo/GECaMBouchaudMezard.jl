@@ -96,7 +96,7 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
     ΔW = @SVector zeros(N)
 
     # integration loop
-    @showprogress for τ in 2:T
+    for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
@@ -112,6 +112,10 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
             throw(DomainError(x, "Inf value obtained"))
         end
         xs[:, τ] = x/mean(x)
+
+        if mod(τ/T*100, 2)
+            println("Progress: $(τ/T*100)%")
+        end
     end
 
     save_JLD(xs, p, dt, t_end, 1)
