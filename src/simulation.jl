@@ -17,7 +17,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 
     sol.xs[:, 1] .= x_init
 
-    x = @SVector x_init
+    x =  x_init
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
@@ -47,8 +47,9 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     xs = @SMatrix zeros(N, T)
 
     xs[:, 1] = x_init
-
-    x = @SVector x_init
+   
+    x = @SVector zeros(N)
+    x =  x_init
     Δx_det = @SVector zeros(N)
     Δx_stoch = @SVector zeros(N)
     Δx_Mil = @SVector zeros(N)
