@@ -1,5 +1,13 @@
 function Wiener_diag!(ΔW::Array{Float64}, Δt::Float64)
-    ΔW .= randn(size(ΔW)[1]).*sqrt(Δt)
+    randn!(ΔW).*sqrt(Δt)
+end
+
+f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
+function g!(dx, x, p)
+    dx .= sqrt(p[3]) .* x
+end
+function g_Mil!(dx, x, p) 
+    dx .= p[3]/2 .* x
 end
 
 
@@ -8,10 +16,6 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
-
-    f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
-    g!(dx, x, p) = mul!(dx, sqrt(p[3]), x)
-    g_Mil!(dx, x, p) = mul!(dx, p[3]/2, x)
 
     sol = SDEsol(Vector(ts), N, dt, p)
 
@@ -31,7 +35,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         Wiener_diag!(ΔW, dt)
 
         # Milstein update
-        x .= x + Δx_det.*dt + Δx_stoch.*ΔW + Δx_Mil.*(ΔW.^2 .- dt)
+        x .= x .+ Δx_det.*dt .+ Δx_stoch.*ΔW .+ Δx_Mil.*(ΔW.^2 .- dt)
         sol.xs[:, τ] .= x/mean(x)
     end
     return sol
