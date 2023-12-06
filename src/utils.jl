@@ -125,3 +125,18 @@ function save_JLD(sol, p, dt, t_end, i, thread_id)
 
     println("writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
 end
+
+function save_JLD(p, dt, t_end, i, thread_id)
+    K = Int(p[1][1,1])
+    N = size(p[1])[1]
+    σ² = p[2]
+    J = p[1]
+
+    dirpath = "./data/sim/N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)"
+
+    mkpath(dirpath)
+
+    @save dirpath*"/xs_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" xs
+
+    println("writing xs_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
+end

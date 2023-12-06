@@ -3,12 +3,8 @@ function Wiener_diag!(ΔW::Array{Float64}, Δt::Float64)
 end
 
 f!(dx, x, p) = mul!(dx, p[1].*p[2], x)
-function g!(dx, x, p)
-    dx .= sqrt(p[3]) .* x
-end
-function g_Mil!(dx, x, p) 
-    dx .= p[3]/2 .* x
-end
+g!(dx, x, p) =  mul!(dx, sqrt(p[3]), x)
+g_Mil!(dx, x, p) = mul!(dx, p[3]/2, x)
 
 
 function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64)
@@ -21,7 +17,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 
     sol.xs[:, 1] .= x_init
 
-    x = x_init
+    x = @SVector x_init
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
@@ -42,17 +38,17 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, thread_id)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init, t_init::Float64, t_end::Float64, thread_id)
     N = length(x_init)
     
     ts = range(t_init, t_end, step=dt)
     T = length(ts)
 
-    sol = SDEsol(Vector(ts), N, dt, p)
+    xs = @SMatrix zeros(N, T)
 
-    sol.xs[:, 1] .= x_init
+    xs[:, 1] = x_init
 
-    x = x_init
+    x = @SVector x_init
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
@@ -66,7 +62,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         Wiener_diag!(ΔW, dt)
 
         # Milstein update
-        x .= x + Δx_det.*dt + Δx_stoch.*ΔW + Δx_Mil.*(ΔW.^2 .- dt)
+        x = @SVector x + Δx_det.*dt + Δx_stoch.*ΔW + Δx_Mil.*(ΔW.^2 .- dt)
         if any(isnan, x)
             println("ERROR: NaN evaluated")
             throw(DomainError(x, "NaN value obtained"))
@@ -74,10 +70,10 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
             println("ERROR: Inf evaluated")
             throw(DomainError(x, "Inf value obtained"))
         end
-        sol.xs[:, τ] .= x/mean(x)
+        xs[:, τ] = @SVector x/mean(x)
     end
 
-    save_JLD(sol, p, dt, t_end, thread_id)
+    save_JLD(xs, p, dt, t_end, thread_id)
 end
 
 
