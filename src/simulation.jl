@@ -115,6 +115,7 @@ function BM_MilSDE_JLD_prog(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Flo
 
         if mod(τ/T*100, 2)
             println("Progress: $(τ/T*100)%")
+            flush(stdout)
         end
     end
 
