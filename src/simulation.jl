@@ -1,4 +1,4 @@
-function Wiener_diag!(ΔW, Δt::Float64)
+function Wiener_diag!(ΔW::Any, Δt::Float64)
     randn!(ΔW).*sqrt(Δt)
 end
 
