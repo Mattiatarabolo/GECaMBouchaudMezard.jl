@@ -70,7 +70,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     ΔW = zeros(N)
 
     # integration loop
-    @turbo for τ in 2:T
+    for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
