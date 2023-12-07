@@ -33,7 +33,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     xs = zeros(N, T)
 
     mat_update!(xs, x_init, 1, N)
-    x_mean = mean
+    x_mean = 0.0
 
     x =  x_init
     Δx_det = zeros(N)
@@ -65,7 +65,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     xs = zeros(N, T)
 
     mat_update!(xs, x_init, 1, N)
-    x_mean = mean
+    x_mean = 0.0
 
     x =  x_init
     Δx_det = zeros(N)
@@ -96,7 +96,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     xs = zeros(N, T)
 
     mat_update!(xs, x_init, 1, N)
-    x_mean = mean
+    x_mean = 0.0
 
     x =  x_init
     Δx_det = zeros(N)
