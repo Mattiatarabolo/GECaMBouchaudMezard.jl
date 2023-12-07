@@ -1,5 +1,5 @@
 function idx_t(t, dt)
-    return floor(Int, t/dt)
+    return floor(Int, t/dt) + 1
 end
 
 
