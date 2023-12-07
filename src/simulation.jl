@@ -10,7 +10,7 @@ g_Mil!(dx::Vector{Float64}, x::Vector{Float64}, p::Tuple{Float64, SparseMatrixCS
 
 function Mil_update!(x::Vector{Float64}, Δx_det::Vector{Float64}, Δx_stoch::Vector{Float64}, Δx_Mil::Vector{Float64}, ΔW::Vector{Float64}, dt::Float64, N::Int)
     @turbo for i in 1:N
-        x[i] = x + Δx_det*dt + Δx_stoch*ΔW*sqrt(dt) + Δx_Mil*(ΔW.^2 - 1)*dt
+        x[i] = x[i] + Δx_det[i]*dt + Δx_stoch[i]*ΔW[i]*sqrt(dt) + Δx_Mil[i]*(ΔW[i].^2 - 1)*dt
     end
 end
 
@@ -42,7 +42,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     ΔW = zeros(N)
 
     # integration loop
-    for τ in 2:T
+    @showprogress for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
@@ -74,7 +74,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     ΔW = zeros(N)
 
     # integration loop
-    for τ in 2:T
+    @showprogress for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
