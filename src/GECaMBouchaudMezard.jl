@@ -9,7 +9,7 @@ using JLD2
 using StaticArrays
 import ProgressMeter.@showprogress
 
-export BM_MilSDE, sim_BM_MilSDE, BM_MilSDE_JLD, sim_BM_MilSDE_JLD, idx_t, pareto_fit, pdf_norm_wealth, pareto_exponent, BM_MilSDE_JLD_prog
+export BM_MilSDE, BM_MilSDE_JLD, sim_BM_MilSDE, sim_BM_MilSDE_JLD, idx_t
 
 include("types.jl")
 include("utils.jl")
