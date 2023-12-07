@@ -1,10 +1,10 @@
 function Wiener_diag!(ΔW::Vector{Float64}, N::Int)
-    @turbo for i in 1:N
+    @inbounds for i in 1:N
         ΔW[i] = randn()
     end
 end
 
-f!(dx::Vector{Float64}, x::Vector{Float64}, p::Tuple{Float64, SparseMatrixCSC, Float64}) = mul!(dx, p[1].*p[2], x)
+f!(dx::Vector{Float64}, x::Vector{Float64}, p::Tuple{Float64, SparseMatrixCSC, Float64}) = mul!(dx, p[2]*p[1], x)
 g!(dx::Vector{Float64}, x::Vector{Float64}, p::Tuple{Float64, SparseMatrixCSC, Float64}) =  mul!(dx, sqrt(p[3]), x)
 g_Mil!(dx::Vector{Float64}, x::Vector{Float64}, p::Tuple{Float64, SparseMatrixCSC, Float64}) = mul!(dx, p[3]/2, x)
 
