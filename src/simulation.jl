@@ -192,7 +192,7 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         mat_update!(xs_sim, xs, idx_sim, N, T)
     end
 
-    return sim
+    return xs_sim
 end
 
 
