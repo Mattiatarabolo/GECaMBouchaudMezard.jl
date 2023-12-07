@@ -23,7 +23,7 @@ end
 
 function mat_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int)
     @turbo for i in 1:N
-        xs[i,j] = x[i]
+        xs[i, τ] = x[i]
     end
 end
 
