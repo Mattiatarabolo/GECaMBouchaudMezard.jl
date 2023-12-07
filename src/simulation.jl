@@ -44,9 +44,13 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     # integration loop
     @showprogress for τ in 2:T
         f!(Δx_det, x, p)
+        println(Δx_det)
         g!(Δx_stoch, x, p)
+        println(Δx_stoch)
         g_Mil!(Δx_Mil, x, p)
+        println(Δx_Mil)
         Wiener_diag!(ΔW, N)
+        println(ΔW)
 
         # Milstein update
 
