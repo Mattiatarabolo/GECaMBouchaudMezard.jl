@@ -2,7 +2,7 @@ function idx_t(t, dt)
     return floor(Int, t/dt) + 1
 end
 
-
+#=
 function pdf_norm_wealth(sol::SDEsol, ts::UnitRange{Int64}, nbins::Int)
     wealths = Vector{Float64}()
     for t in ts
@@ -94,9 +94,9 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
     h = pdf_norm_wealth(sim, ts, nbins)
     return pareto_exponent(h, frac_init, frac_end)
 end
+=#
 
-
-function save_JLD(sol, p, dt, t_end, thread_id)
+function save_JLD(xs::Matrix{FLoat64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
     K = Int(p[2][1,1])
     N = size(p[2])[1]
     σ² = p[3]
@@ -105,13 +105,25 @@ function save_JLD(sol, p, dt, t_end, thread_id)
     dirpath = "./data/single_sol/sol"
     mkpath(dirpath)
 
-    @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" sol
+    @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs
+ end
+
+function save_JLD(xs::Matrix{FLoat64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64, thread_id::Int)
+    K = Int(p[2][1,1])
+    N = size(p[2])[1]
+    σ² = p[3]
+    J = p[1]
+
+    dirpath = "./data/single_sol/sol"
+    mkpath(dirpath)
+
+    @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs
     
     println("writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(thread_id)")
 end
 
 
-function save_JLD(xs, p, dt, t_end, i, thread_id)
+function save_JLD(xs_sim::Array{Float64, 3},  p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
     K = Int(p[1][1,1])
     N = size(p[1])[1]
     σ² = p[2]
@@ -121,7 +133,7 @@ function save_JLD(xs, p, dt, t_end, i, thread_id)
 
     mkpath(dirpath)
 
-    @save dirpath*"/xs_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" xs
+    @save dirpath*"/sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" xs_sim
 
-    println("writing xs_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i) on thread $(thread_id)")
+    println("writing sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i)")
 end
