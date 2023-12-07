@@ -96,7 +96,7 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
 end
 =#
 
-function save_JLD(xs::Matrix{FLoat64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
+function save_JLD(xs::Matrix{Float64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
     K = Int(p[2][1,1])
     N = size(p[2])[1]
     σ² = p[3]
@@ -108,7 +108,7 @@ function save_JLD(xs::Matrix{FLoat64}, p::Tuple{Float64, SparseArrays.SparseMatr
     @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs
  end
 
-function save_JLD(xs::Matrix{FLoat64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64, thread_id::Int)
+function save_JLD(xs::Matrix{Float64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64, thread_id::Int)
     K = Int(p[2][1,1])
     N = size(p[2])[1]
     σ² = p[3]
