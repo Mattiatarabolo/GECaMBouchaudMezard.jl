@@ -30,6 +30,8 @@ end
 function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int)
     T = floor(Int, (t_end-t_init)/dt) + 1
     
+    xs = zeros(N, T)
+
     mat_update!(xs, x_init, 1, N)
     x_mean = mean
 
@@ -49,7 +51,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, av)
+        sol_update!(xs, x, τ, N, x_mean)
     end
     return xs
 end
@@ -60,6 +62,8 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     
     T = floor(Int, (t_end-t_init)/dt) + 1
     
+    xs = zeros(N, T)
+
     mat_update!(xs, x_init, 1, N)
     x_mean = mean
 
@@ -79,7 +83,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, av)
+        sol_update!(xs, x, τ, N, x_mean)
     end
 
     save_JLD(xs, p, dt, t_end, thread_id)
@@ -89,6 +93,8 @@ end
 function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int)
     T = floor(Int, (t_end-t_init)/dt) + 1
     
+    xs = zeros(N, T)
+
     mat_update!(xs, x_init, 1, N)
     x_mean = mean
 
@@ -108,7 +114,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, av)
+        sol_update!(xs, x, τ, N, x_mean)
     end
 
     save_JLD(xs, p, dt, t_end)
