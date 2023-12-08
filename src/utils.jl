@@ -129,7 +129,7 @@ function save_JLD(xs_sim::Array{Float64, 3},  p::Tuple{Float64, SparseArrays.Spa
     σ² = p[2]
     J = p[1]
 
-    dirpath = "./data/sim/N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)"
+    dirpath = "./data/sim/sim"
 
     mkpath(dirpath)
 
