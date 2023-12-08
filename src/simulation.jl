@@ -161,6 +161,7 @@ function mat_update!(xs_sim::Array{Float64, 3}, xs::Matrix{Float64}, idx_sim::In
 end
 
 function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int)
+    
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     xs_sim = zeros(nsim, N, T)
@@ -212,6 +213,10 @@ end
 
 
 function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int)
+    K = Int(p[2][1,1])
+    σ² = p[3]
+    J = p[1]
+    
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     xs_sim = zeros(nsim, N, T)
@@ -231,6 +236,10 @@ end
 
 
 function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int)
+    K = Int(p[2][1,1])
+    σ² = p[3]
+    J = p[1]
+    
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     xs_sim = zeros(nsim, N, T)
