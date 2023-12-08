@@ -96,11 +96,7 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
 end
 =#
 
-function save_JLD(xs::Matrix{Float64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
-    K = Int(p[2][1,1])
-    N = size(p[2])[1]
-    σ² = p[3]
-    J = p[1]
+function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float65, σ²::Float64, dt::Float64, t_end::Float64)
 
     dirpath = "./data/single_sol/sol"
     mkpath(dirpath)
@@ -108,26 +104,15 @@ function save_JLD(xs::Matrix{Float64}, p::Tuple{Float64, SparseArrays.SparseMatr
     @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs
  end
 
-function save_JLD(xs::Matrix{Float64}, p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64, thread_id::Int)
-    K = Int(p[2][1,1])
-    N = size(p[2])[1]
-    σ² = p[3]
-    J = p[1]
 
-    dirpath = "./data/single_sol/sol"
-    mkpath(dirpath)
+function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float65, σ²::Float64, dt::Float64, t_end::Float64, idx_sim::Int, dirpath::String)
 
-    @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs
-    
-    println("writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end) on thread $(thread_id)")
+    @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim).jld" xs
+
 end
 
 
-function save_JLD(xs_sim::Array{Float64, 3},  p::Tuple{Float64, SparseArrays.SparseMatrixCSC{Int64, Int64}, Float64}, dt::Float64, t_end::Float64)
-    K = Int(p[1][1,1])
-    N = size(p[1])[1]
-    σ² = p[2]
-    J = p[1]
+function save_JLD(xs_sim::Array{Float64, 3}, N::Int, K::Int, J::Float65, σ²::Float64, dt::Float64, t_end::Float64)
 
     dirpath = "./data/sim/sim"
 
