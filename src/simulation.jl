@@ -88,11 +88,12 @@ end
 
 
 function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String)
-    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
     
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
+
+    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
 
     T = floor(Int, (t_end-t_init)/dt) + 1
     
@@ -126,12 +127,13 @@ end
 
 
 function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int)
-    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
     
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
     
+    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
+
     T = floor(Int, (t_end-t_init)/dt) + 1
     
     xs = zeros(N, T)
