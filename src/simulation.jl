@@ -27,21 +27,29 @@ function mat_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int)
     end
 end
 
-function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int)
+function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::OrdinalRange)
     T = floor(Int, (t_end-t_init)/dt) + 1
+
+    T_save = length(tsave)
     
-    xs = zeros(N, T)
-
-    mat_update!(xs, x_init, 1, N)
-    x_mean = 0.0
-
+    xs = zeros(N, T_save)
+    
     x =  x_init
+    
+    x_mean = 0.0
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
     ΔW = zeros(N)
 
+    isave = 1
+    if 1 in tsave
+        sol_update!(xs, x, 1, N, x_mean)
+        isave += 1
+    end
+
     # integration loop
+
     @showprogress for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
@@ -51,26 +59,37 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, x_mean)
+
+        if τ in tsave
+            sol_update!(xs, x, isave, N, x_mean)
+            isave += 1
+        end
     end
     return xs
 end
 
 
-function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, thread_id::Int)
+function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, thread_id::Int, tsave::OrdinalRange)
     T = floor(Int, (t_end-t_init)/dt) + 1
+
+    T_save = length(tsave)
     
-    xs = zeros(N, T)
-
-    mat_update!(xs, x_init, 1, N)
-    x_mean = 0.0
-
+    xs = zeros(N, T_save)
+    
     x =  x_init
+    
+    x_mean = 0.0
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
     ΔW = zeros(N)
 
+    isave = 1
+    if 1 in tsave
+        sol_update!(xs, x, 1, N, x_mean)
+        isave += 1
+    end
+    
     # integration loop
     for τ in 2:T
         f!(Δx_det, x, p)
@@ -81,13 +100,17 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, x_mean)
+
+        if τ in tsave
+            sol_update!(xs, x, isave, N, x_mean)
+            isave += 1
+        end
     end
     return xs
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange)
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -96,18 +119,25 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
 
     T = floor(Int, (t_end-t_init)/dt) + 1
+
+    T_save = length(tsave)
     
-    xs = zeros(N, T)
-
-    mat_update!(xs, x_init, 1, N)
-    x_mean = 0.0
-
+    xs = zeros(N, T_save)
+    
     x =  x_init
+    
+    x_mean = 0.0
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
     ΔW = zeros(N)
 
+    isave = 1
+    if 1 in tsave
+        sol_update!(xs, x, 1, N, x_mean)
+        isave += 1
+    end
+    
     # integration loop
     for τ in 2:T
         f!(Δx_det, x, p)
@@ -118,7 +148,11 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, x_mean)
+
+        if τ in tsave
+            sol_update!(xs, x, isave, N, x_mean)
+            isave += 1
+        end
     end
 
     save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath)
@@ -126,7 +160,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::OrdinalRange)
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -135,18 +169,25 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
 
     T = floor(Int, (t_end-t_init)/dt) + 1
+
+    T_save = length(tsave)
     
-    xs = zeros(N, T)
-
-    mat_update!(xs, x_init, 1, N)
-    x_mean = 0.0
-
+    xs = zeros(N, T_save)
+    
     x =  x_init
+    
+    x_mean = 0.0
     Δx_det = zeros(N)
     Δx_stoch = zeros(N)
     Δx_Mil = zeros(N)
     ΔW = zeros(N)
 
+    isave = 1
+    if 1 in tsave
+        sol_update!(xs, x, 1, N, x_mean)
+        isave += 1
+    end
+    
     # integration loop
     @showprogress for τ in 2:T
         f!(Δx_det, x, p)
@@ -157,7 +198,11 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         # Milstein update
 
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
-        sol_update!(xs, x, τ, N, x_mean)
+
+        if τ in tsave
+            sol_update!(xs, x, isave, N, x_mean)
+            isave += 1
+        end
     end
 
     save_JLD(xs, N, K, J, σ², dt, t_end)
@@ -174,37 +219,11 @@ function mat_update!(xs_sim::Array{Float64, 3}, xs::Matrix{Float64}, idx_sim::In
     end
 end
 
-function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int)
-    
-    T = floor(Int, (t_end-t_init)/dt) + 1
+function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::OrdinalRange)
 
-    xs_sim = zeros(nsim, N, T)
+    T_save = length(tsave)
 
-    Threads.@threads for idx_sim in 1:nsim
-        G = random_regular_graph(N, K)
-        Amod = adjacency_matrix(G)
-        for i in 1:NV
-            Amod[i,i] = -Float64(K)
-        end
-
-        p = (J, Amod, σ²)
-
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        Random.seed!(seed)
-        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid())
-
-        mat_update!(xs_sim, xs, idx_sim, N, T)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-    end
-
-    return xs_sim
-end
-
-
-function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int)
-    T = floor(Int, (t_end-t_init)/dt) + 1
-    
-    xs_sim = zeros(nsim, N, T)
+    xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
         G = random_regular_graph(N, K)
@@ -217,31 +236,9 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 
         println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         Random.seed!(seed)
-        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid())
-        
-        mat_update!(xs_sim, xs, idx_sim, N, T)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-    end
-    save_JLD(xs_sim, N, K, J, σ², dt, t_end)
-end
+        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave)
 
-
-function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int)
-    K = Int(p[2][1,1])
-    σ² = p[3]
-    J = p[1]
-    
-    T = floor(Int, (t_end-t_init)/dt) + 1
-
-    xs_sim = zeros(nsim, N, T)
-
-    Threads.@threads for idx_sim in 1:nsim
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-
-        Random.seed!(seed + idx_sim)
-        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid())
-
-        mat_update!(xs_sim, xs, idx_sim, N, T)
+        mat_update!(xs_sim, xs, idx_sim, N, T_save)
         println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 
@@ -249,32 +246,80 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int)
-    K = Int(p[2][1,1])
-    σ² = p[3]
-    J = p[1]
+function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::OrdinalRange)
+    T_save = length(tsave)
     
-    T = floor(Int, (t_end-t_init)/dt) + 1
-
-    xs_sim = zeros(nsim, N, T)
+    xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        
-        Random.seed!(seed + idx_sim)
-        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid())
+        G = random_regular_graph(N, K)
+        Amod = adjacency_matrix(G)
+        for i in 1:NV
+            Amod[i,i] = -Float64(K)
+        end
 
-        mat_update!(xs_sim, xs, idx_sim, N, T)
+        p = (J, Amod, σ²)
+
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        Random.seed!(seed)
+        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave)
+        
+        mat_update!(xs_sim, xs, idx_sim, N, T_save)
         println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
     save_JLD(xs_sim, N, K, J, σ², dt, t_end)
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, dirpath::String)
+function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::OrdinalRange)
+    K = Int(p[2][1,1])
+    σ² = p[3]
+    J = p[1]
+    
+    T_save = length(tsave)
+
+    xs_sim = zeros(nsim, N, T_save)
+
+    Threads.@threads for idx_sim in 1:nsim
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+
+        Random.seed!(seed + idx_sim)
+        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave)
+
+        mat_update!(xs_sim, xs, idx_sim, N, T_save)
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+    end
+
+    return xs_sim
+end
+
+
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::OrdinalRange)
+    K = Int(p[2][1,1])
+    σ² = p[3]
+    J = p[1]
+    
+    T_save = length(tsave)
+
+    xs_sim = zeros(nsim, N, T_save)
+
+    Threads.@threads for idx_sim in 1:nsim
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        
+        Random.seed!(seed + idx_sim)
+        xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave)
+
+        mat_update!(xs_sim, xs, idx_sim, N, T_save)
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+    end
+    save_JLD(xs_sim, N, K, J, σ², dt, t_end)
+end
+
+
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, dirpath::String, tsave::OrdinalRange)
     Threads.@threads for idx_sim in 1:nsim
         
         Random.seed!(seed + idx_sim)
-        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath)
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave)
     end
 end
