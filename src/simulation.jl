@@ -12,6 +12,10 @@ function Mil_update!(x::Vector{Float64}, Δx_det::Vector{Float64}, Δx_stoch::Ve
     @turbo for i in 1:N
         x[i] = x[i] + Δx_det[i]*dt + Δx_stoch[i]*ΔW[i]*sqrt(dt) + Δx_Mil[i]*(ΔW[i]^2 - 1)*dt
     end
+    if !all(isfinite, x)
+        println(x)
+        throw(DomainError(x, "Inf or NaN value computed"))
+    end
 end
 
 function sol_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int, av::Float64)
