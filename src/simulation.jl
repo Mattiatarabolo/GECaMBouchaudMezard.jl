@@ -13,7 +13,15 @@ function Mil_update!(x::Vector{Float64}, Δx_det::Vector{Float64}, Δx_stoch::Ve
         x[i] = x[i] + Δx_det[i]*dt + Δx_stoch[i]*ΔW[i]*sqrt(dt) + Δx_Mil[i]*(ΔW[i]^2 - 1)*dt
     end
     if !all(isfinite, x)
+        println(Δx_det)
+        println(Δx_stoch)
+        println(Δx_Mil)
+        println(ΔW)
+
+        println("-------------------------------")
+
         println(x)
+
         throw(DomainError(x, "Inf or NaN value computed"))
     end
 end
