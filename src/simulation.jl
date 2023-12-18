@@ -131,7 +131,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange, threadid::Int)
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -161,6 +161,57 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     
     # integration loop
     for τ in 2:T
+        f!(Δx_det, x, p)
+        g!(Δx_stoch, x, p)
+        g_Mil!(Δx_Mil, x, p)
+        Wiener_diag!(ΔW, N)
+
+        # Milstein update
+
+        Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
+
+        if τ in tsave
+            sol_update!(xs, x, isave, N, x_mean)
+            isave += 1
+        end
+    end
+
+    save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath)
+    println("Writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
+end
+
+
+
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange)
+    
+    K = Int(p[2][1,1])
+    σ² = p[3]
+    J = p[1]
+
+    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
+
+    T = floor(Int, (t_end-t_init)/dt) + 1
+
+    T_save = length(tsave)
+    
+    xs = zeros(N, T_save)
+    
+    x =  x_init
+    
+    x_mean = 0.0
+    Δx_det = zeros(N)
+    Δx_stoch = zeros(N)
+    Δx_Mil = zeros(N)
+    ΔW = zeros(N)
+
+    isave = 1
+    if 1 in tsave
+        sol_update!(xs, x, 1, N, x_mean)
+        isave += 1
+    end
+    
+    # integration loop
+    @showprogress for τ in 2:T
         f!(Δx_det, x, p)
         g!(Δx_stoch, x, p)
         g_Mil!(Δx_Mil, x, p)
@@ -341,6 +392,6 @@ function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Floa
     Threads.@threads for idx_sim in 1:nsim
         
         Random.seed!(seed + idx_sim)
-        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave)
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid())
     end
 end
