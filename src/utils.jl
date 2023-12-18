@@ -118,7 +118,7 @@ function save_JLD(xs_sim::Array{Float64, 3}, N::Int, K::Int, J::Float64, σ²::F
 
     mkpath(dirpath)
 
-    @save dirpath*"/sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i).jld" xs_sim
+    @save dirpath*"/sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end).jld" xs_sim
 
-    println("writing sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(i)")
+    println("writing sim_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
 end
