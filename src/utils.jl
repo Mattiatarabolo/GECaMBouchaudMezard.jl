@@ -114,7 +114,7 @@ end
 
 function save_JLD(xs_sim::Array{Float64, 3}, N::Int, K::Int, J::Float64, σ²::Float64, dt::Float64, t_end::Float64)
 
-    dirpath = "./data/sim/sim"
+    dirpath = "./data/sim/sim_arrays"
 
     mkpath(dirpath)
 
