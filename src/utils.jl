@@ -96,6 +96,10 @@ function pareto_fit(sim::SDEsim, ts::UnitRange{Int64}, nbins::Int, frac_init::Fl
 end
 =#
 
+function Y2(xs_sim::Array{Float64, 3})
+    return mean(sum(xs_sim, dims=2), dims=(1,3))[1]
+end
+
 function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float64, σ²::Float64, dt::Float64, t_end::Float64)
 
     dirpath = "./data/single_sol/sol"
