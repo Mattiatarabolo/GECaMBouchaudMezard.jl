@@ -55,8 +55,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     
     xs = zeros(N, T_save)
     
-    x = zeros(N)
-    x = x_init
+    x = copy(x_init)
     
     x_mean = 0.0
     Δx_det = zeros(N)
@@ -98,8 +97,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
     
     xs = zeros(N, T_save)
     
-    x = zeros(N)
-    x = x_init
+    x = copy(x_init)
     
     x_mean = 0.0
     Δx_det = zeros(N)
@@ -147,8 +145,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     
     xs = zeros(N, T_save)
     
-    x = zeros(N)
-    x = x_init
+    x = copy(x_init)
     
     x_mean = 0.0
     Δx_det = zeros(N)
@@ -199,8 +196,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     
     xs = zeros(N, T_save)
     
-    x = zeros(N)
-    x = x_init
+    x = copy(x_init)
     
     x_mean = 0.0
     Δx_det = zeros(N)
@@ -250,8 +246,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     
     xs = zeros(N, T_save)
     
-    x = zeros(N)
-    x = x_init
+    x = copy(x_init)
     
     x_mean = 0.0
     Δx_det = zeros(N)
