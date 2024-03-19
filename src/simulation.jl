@@ -12,20 +12,20 @@ function Mil_update!(x::Vector{Float64}, Δx_det::Vector{Float64}, Δx_stoch::Ve
     @turbo for i in 1:N
         x[i] = x[i] + Δx_det[i]*dt + Δx_stoch[i]*ΔW[i]*sqrt(dt) + Δx_Mil[i]*(ΔW[i]^2 - 1)*dt
     end
-    if !all(isfinite, x)
-        if !all(isfinite, Δx_det)
+    if any(!isfinite, x)
+        if any(!isfinite, Δx_det)
             for idx_debug in findall(x -> !isfinite(x), Δx_det)
                 println("Δx_det[$idx_debug] = $(Δx_det[idx_debug])")
             end
-        elseif !all(isfinite, Δx_stoch)
+        elseif any(!isfinite, Δx_stoch)
             for idx_debug in findall(x -> !isfinite(x), Δx_stoch)
                 println("Δx_stoch[$idx_debug] = $(Δx_stoch[idx_debug])")
             end
-        elseif !all(isfinite, Δx_Mil)
+        elseif ant(!isfinite, Δx_Mil)
             for idx_debug in findall(x -> !isfinite(x), Δx_Mil)
                 println("Δx_Mil[$idx_debug] = $(Δx_Mil[idx_debug])")
             end
-        elseif !all(isfinite, ΔW)
+        elseif any(!isfinite, ΔW)
             for idx_debug in findall(x -> !isfinite(x), ΔW)
                 println("ΔW[$idx_debug] = $(ΔW[idx_debug])")
             end
