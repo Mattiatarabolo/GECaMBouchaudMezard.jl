@@ -35,7 +35,7 @@ function Mil_update!(x::Vector{Float64}, Δx_det::Vector{Float64}, Δx_stoch::Ve
     end
 end
 
-function sol_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int, av::Float64)
+function sol_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int)
     av = mean(x)
     @turbo for i in 1:N
         xs[i, τ] = x[i]/av
@@ -65,7 +65,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 
     isave = 1
     if 1 in tsave
-        sol_update!(xs, x, 1, N, x_mean)
+        sol_update!(xs, x, 1, N)
         isave += 1
     end
 
