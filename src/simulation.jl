@@ -48,7 +48,7 @@ function mat_update!(xs::Matrix{Float64}, x::Vector{Float64}, τ::Int, N::Int)
     end
 end
 
-function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::OrdinalRange)
+function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::Union{OrdinalRange,AbstractVector})
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     T_save = length(tsave)
@@ -90,7 +90,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, thread_id::Int, tsave::OrdinalRange)
+function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, thread_id::Int, tsave::Union{OrdinalRange,AbstractVector})
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     T_save = length(tsave)
@@ -131,7 +131,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange, threadid::Int)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector}, threadid::Int)
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -182,7 +182,7 @@ end
 
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::OrdinalRange)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector})
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -232,7 +232,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::OrdinalRange)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, tsave::Union{OrdinalRange,AbstractVector})
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -291,7 +291,7 @@ function mat_update!(xs_sim::Array{Float64, 3}, xs::Matrix{Float64}, idx_sim::In
     end
 end
 
-function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::OrdinalRange)
+function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::Union{OrdinalRange,AbstractVector})
 
     T_save = length(tsave)
 
@@ -318,7 +318,7 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
 end
 
 
-function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::OrdinalRange)
+function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, tsave::Union{OrdinalRange,AbstractVector})
     T_save = length(tsave)
     
     xs_sim = zeros(nsim, N, T_save)
@@ -343,7 +343,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 end
 
 
-function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::OrdinalRange)
+function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::Union{OrdinalRange,AbstractVector})
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
@@ -366,7 +366,7 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::OrdinalRange)
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, tsave::Union{OrdinalRange,AbstractVector})
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
@@ -388,7 +388,7 @@ function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Floa
 end
 
 
-function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, dirpath::String, tsave::OrdinalRange)
+function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector})
     Threads.@threads for idx_sim in 1:nsim
         
         Random.seed!(seed + idx_sim)
