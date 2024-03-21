@@ -82,7 +82,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
 
         if τ in tsave
-            sol_update!(xs, x, isave, N, x_mean)
+            sol_update!(xs, x, isave, N)
             isave += 1
         end
     end
@@ -107,7 +107,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 
     isave = 1
     if 1 in tsave
-        sol_update!(xs, x, 1, N, x_mean)
+        sol_update!(xs, x, 1, N)
         isave += 1
     end
     
@@ -123,7 +123,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
 
         if τ in tsave
-            sol_update!(xs, x, isave, N, x_mean)
+            sol_update!(xs, x, isave, N)
             isave += 1
         end
     end
@@ -155,7 +155,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 
     isave = 1
     if 1 in tsave
-        sol_update!(xs, x, 1, N, x_mean)
+        sol_update!(xs, x, 1, N)
         isave += 1
     end
     
@@ -171,7 +171,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
 
         if τ in tsave
-            sol_update!(xs, x, isave, N, x_mean)
+            sol_update!(xs, x, isave, N)
             isave += 1
         end
     end
@@ -206,7 +206,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 
     isave = 1
     if 1 in tsave
-        sol_update!(xs, x, 1, N, x_mean)
+        sol_update!(xs, x, 1, N)
         isave += 1
     end
     
@@ -222,7 +222,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
 
         if τ in tsave
-            sol_update!(xs, x, isave, N, x_mean)
+            sol_update!(xs, x, isave, N)
             isave += 1
         end
     end
@@ -256,7 +256,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
 
     isave = 1
     if 1 in tsave
-        sol_update!(xs, x, 1, N, x_mean)
+        sol_update!(xs, x, 1, N)
         isave += 1
     end
     
@@ -272,7 +272,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         Mil_update!(x, Δx_det, Δx_stoch, Δx_Mil, ΔW, dt, N)
 
         if τ in tsave
-            sol_update!(xs, x, isave, N, x_mean)
+            sol_update!(xs, x, isave, N)
             isave += 1
         end
     end
