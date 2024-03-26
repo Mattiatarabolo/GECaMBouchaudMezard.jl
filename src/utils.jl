@@ -65,3 +65,34 @@ function improved_hill_plot(x_ranked::Vector{T}, k_max::Int, j_max::Int) where T
     end
     return α_hill    
 end
+
+function improved_hill_plot_2(x_ranked::Vector, k_max::Int, j_max::Int; iter::Int=5)
+    C(α, L, R) = (log(L)*R^α-log(R)*L^α)/(R^α-L^α)
+    D(α, L, R) = (R*L)^α*((log(L)-log(R))/(L^α-R^α))^2
+    
+    x_ranked_ln = log.(x_ranked)
+    if j_max >= k_max
+        j_max = k_max - 2
+    end        
+    α_hill = [zeros(k_max-j+1) for j in 1:j_max]
+    ks = [j:k_max for j in 1:j_max]
+    @showprogress for j in 1:j_max
+        for (ki, k) in enumerate(ks[j])
+            α = 1.0/(mean(x_ranked_ln[j:k]) - x_ranked_ln[k])
+            for p in 2:iter
+                α *= 1+(α*(mean(x_ranked_ln[j:k])-C(α, x_ranked[k], x_ranked[j]))-1)/(α*D(α, x_ranked[k], x_ranked[j])-1)
+            end
+            α_hill[j][ki] = α
+        end
+    end
+    return α_hill
+end
+
+function pdf_norm_wealth(xs::Vector, nbins::Int)
+    filter!(x -> x>0, xs)
+    edge_l = log10(minimum(xs))
+    edge_r = log10(maximum(xs))
+    edges = 10.0 .^ (range(edge_l, edge_r, length=nbins))
+    
+    return StatsBase.normalize(StatsBase.fit(Histogram, xs, edges), mode=:pdf), edges
+end
