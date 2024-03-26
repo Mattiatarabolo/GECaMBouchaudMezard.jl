@@ -11,7 +11,7 @@ using LoopVectorization
 using LaTeXStrings
 import ProgressMeter.@showprogress
 
-export BM_MilSDE, BM_MilSDE_JLD, sim_BM_MilSDE, sim_BM_MilSDE_JLD, idx_t, rank_plot, hill_plot, improved_hill_plot
+export BM_MilSDE, BM_MilSDE_JLD, sim_BM_MilSDE, sim_BM_MilSDE_JLD, idx_t, rank_plot, hill_plot, improved_hill_plot, improved_hill_plot_2, pdf_norm_wealth
 
 include("types.jl")
 include("utils.jl")
