@@ -34,13 +34,13 @@ function save_JLD(xs_sim::Array{Float64, 3}, N::Int, K::Int, J::Float64, σ²::F
 end
 
 
-function rankplot(x::Vector{Float64})
+function rankplot(x::Vector{T}) where T<:Real
     x_ranked = sort(x, rev=true)
     p_rank = scatter(x_ranked, xscale=:log2, yscale=:log2, minorgrid=true, xlabel="rank", ylabel=L"w", markershape=:diamond)
     return p_rank, x_ranked
 end
 
-function hill_plot(x_ranked::Vector{Float64}, k_max::Int)
+function hill_plot(x_ranked::Vector{T}, k_max::Int) where T<:Real
     x_ranked_ln = log.(x_ranked)
     α_hill = ones(k_max)
     for k in 1:k_max
@@ -51,7 +51,7 @@ function hill_plot(x_ranked::Vector{Float64}, k_max::Int)
     return p_hill, α_hill    
 end
 
-function improved_hill_plot(x_ranked::Vector{Float64}, k_max::Int, j_max::Int)
+function improved_hill_plot(x_ranked::Vector{T}, k_max::Int, j_max::Int) where T<:Real
     x_ranked_ln = log.(x_ranked)    
     if j_max >= k_max
         j_max = k_max - 2
