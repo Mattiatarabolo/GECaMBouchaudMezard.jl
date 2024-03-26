@@ -40,7 +40,8 @@ function rankplot(x::Vector{Float64})
     return p_rank, x_ranked
 end
 
-function hill_plot(x_ranked_ln::Vector{Float64}, k_max::Int)
+function hill_plot(x_ranked::Vector{Float64}, k_max::Int)
+    x_ranked_ln = log.(x_ranked)
     α_hill = ones(k_max)
     for k in 1:k_max
         α_hill[k] /= mean(x_ranked_ln[1:k]) - x_ranked_ln[k+1]
@@ -50,7 +51,8 @@ function hill_plot(x_ranked_ln::Vector{Float64}, k_max::Int)
     return p_hill, α_hill    
 end
 
-function improved_hill_plot(x_ranked_ln::Vector{Float64}, k_max::Int, j_max::Int)
+function improved_hill_plot(x_ranked::Vector{Float64}, k_max::Int, j_max::Int)
+    x_ranked_ln = log.(x_ranked)    
     if j_max >= k_max
         j_max = k_max - 2
     end        
