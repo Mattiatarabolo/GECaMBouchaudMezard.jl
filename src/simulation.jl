@@ -293,11 +293,11 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
 
         p = (J, Amod, σ²)
 
-        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
 
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 
     return xs_sim
@@ -319,11 +319,11 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 
         p = (J, Amod, σ²)
 
-        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
         
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
     save_JLD(xs_sim, N, K, J, σ², dt, t_end)
 end
@@ -340,9 +340,9 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 
         p = (J, Amod, σ²)
 
-        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
-        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 end
 
@@ -357,14 +357,12 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-
         rng = Xoshiro(seed*idx_sim)
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
 
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 
     return xs_sim
@@ -381,13 +379,13 @@ function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Floa
     xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         
         rng = Xoshiro(seed*idx_sim)
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
 
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
     save_JLD(xs_sim, N, K, J, σ², dt, t_end)
 end
@@ -397,8 +395,8 @@ function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Floa
     Threads.@threads for idx_sim in 1:nsim
         
         rng = Xoshiro(seed*idx_sim)
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 end
