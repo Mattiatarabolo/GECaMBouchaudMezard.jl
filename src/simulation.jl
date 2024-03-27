@@ -287,7 +287,7 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
         rng = Xoshiro(seed*idx_sim)
         G = random_regular_graph(N, K, rng=rng)
         Amod = adjacency_matrix(G)
-        for i in 1:NV
+        for i in 1:N
             Amod[i,i] = -Float64(K)
         end
 
@@ -313,7 +313,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
         rng = Xoshiro(seed*idx_sim)
         G = random_regular_graph(N, K, rng=rng)
         Amod = adjacency_matrix(G)
-        for i in 1:NV
+        for i in 1:N
             Amod[i,i] = -Float64(K)
         end
 
@@ -334,7 +334,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
         rng = Xoshiro(seed*idx_sim)
         G = random_regular_graph(N, K, rng=rng)
         Amod = adjacency_matrix(G)
-        for i in 1:NV
+        for i in 1:N
             Amod[i,i] = -Float64(K)
         end
 
