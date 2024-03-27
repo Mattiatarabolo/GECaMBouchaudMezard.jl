@@ -135,8 +135,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     σ² = p[3]
     J = p[1]
 
-    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
-
     T = floor(Int, (t_end-t_init)/dt) + 1
 
     T_save = length(tsave)
@@ -174,7 +172,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     end
 
     save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath)
-    println("Writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
 end
 
 
@@ -184,8 +181,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
-
-    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
 
     T = floor(Int, (t_end-t_init)/dt) + 1
 
@@ -224,7 +219,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     end
 
     save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath)
-    println("Writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim)")
 end
 
 
@@ -233,8 +227,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     K = Int(p[2][1,1])
     σ² = p[3]
     J = p[1]
-    
-    println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
 
     T = floor(Int, (t_end-t_init)/dt) + 1
 
@@ -273,7 +265,6 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
     end
 
     save_JLD(xs, N, K, J, σ², dt, t_end)
-    println("Writing sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)")
 end
 
 
@@ -293,7 +284,8 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
     xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
-        G = random_regular_graph(N, K)
+        rng = Xoshiro(seed*idx_sim)
+        G = random_regular_graph(N, K, rng=rng)
         Amod = adjacency_matrix(G)
         for i in 1:NV
             Amod[i,i] = -Float64(K)
@@ -301,12 +293,11 @@ function sim_BM_MilSDE(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_
 
         p = (J, Amod, σ²)
 
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        rng = Xoshiro(seed*idx_sim)
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
 
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 
     return xs_sim
@@ -319,7 +310,8 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
     xs_sim = zeros(nsim, N, T_save)
 
     Threads.@threads for idx_sim in 1:nsim
-        G = random_regular_graph(N, K)
+        rng = Xoshiro(seed*idx_sim)
+        G = random_regular_graph(N, K, rng=rng)
         Amod = adjacency_matrix(G)
         for i in 1:NV
             Amod[i,i] = -Float64(K)
@@ -327,14 +319,31 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
 
         p = (J, Amod, σ²)
 
-        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        rng = Xoshiro(seed*idx_sim)
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
         
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
-        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
     save_JLD(xs_sim, N, K, J, σ², dt, t_end)
+end
+
+
+function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int,  K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector})
+    Threads.@threads for idx_sim in 1:nsim
+        rng = Xoshiro(seed*idx_sim)
+        G = random_regular_graph(N, K, rng=rng)
+        Amod = adjacency_matrix(G)
+        for i in 1:NV
+            Amod[i,i] = -Float64(K)
+        end
+
+        p = (J, Amod, σ²)
+
+        println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
+        println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
+    end
 end
 
 
@@ -353,6 +362,7 @@ function sim_BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         rng = Xoshiro(seed*idx_sim)
         xs = BM_MilSDE(p, dt, x_init, t_init, t_end, N, Threads.threadid(), tsave, rng)
 
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         mat_update!(xs_sim, xs, idx_sim, N, T_save)
         println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
@@ -387,6 +397,8 @@ function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Floa
     Threads.@threads for idx_sim in 1:nsim
         
         rng = Xoshiro(seed*idx_sim)
+        println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
         BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
+        println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 end
