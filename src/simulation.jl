@@ -129,7 +129,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector}, threadid::Int, rng)
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector}, lk::T, rng) where {T<:Base.AbstractLock}
     
     K = Int(p[2][1,1])
     σ² = p[3]
@@ -171,7 +171,7 @@ function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64,
         end
     end
 
-    save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath)
+    save_JLD(xs, N, K, J, σ², dt, t_end, idx_sim, dirpath, lk)
 end
 
 
@@ -330,6 +330,8 @@ end
 
 
 function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int,  K::Int, σ²::Float64, J::Float64, seed::Int, nsim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector})
+    sl = Threads.SpinLock()
+    
     Threads.@threads for idx_sim in 1:nsim
         rng = Xoshiro(seed*idx_sim)
         G = random_regular_graph(N, K, rng=rng)
@@ -341,7 +343,7 @@ function sim_BM_MilSDE_JLD(dt::Float64, x_init::Vector{Float64}, t_init::Float64
         p = (J, Amod, σ²)
 
         println("Starting sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, sl, rng)
         println("Completed sol_changeG_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 end
@@ -392,11 +394,12 @@ end
 
 
 function sim_BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, seed::Int, nsim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector})
+    sl = Threads.SpinLock()
+    
     Threads.@threads for idx_sim in 1:nsim
-        
         rng = Xoshiro(seed*idx_sim)
         println("Starting sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
-        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, Threads.threadid(), rng)
+        BM_MilSDE_JLD(p, dt, x_init, t_init, t_end, N, idx_sim, dirpath, tsave, sl, rng)
         println("Completed sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim) on thread $(Threads.threadid())")
     end
 end
