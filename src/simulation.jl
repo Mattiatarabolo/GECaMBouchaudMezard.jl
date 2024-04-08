@@ -129,7 +129,7 @@ function BM_MilSDE(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_i
 end
 
 
-function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector}, lk::T, rng) where {T<:Base.AbstractLock}
+function BM_MilSDE_JLD(p::Tuple{Float64, SparseMatrixCSC, Float64}, dt::Float64, x_init::Vector{Float64}, t_init::Float64, t_end::Float64, N::Int, idx_sim::Int, dirpath::String, tsave::Union{OrdinalRange,AbstractVector}, lk::TI, rng) where {TI<:Base.AbstractLock}
     
     K = Int(p[2][1,1])
     σ² = p[3]

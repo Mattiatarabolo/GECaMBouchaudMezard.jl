@@ -18,7 +18,7 @@ function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float64, σ²::Float64
     @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim).jld" xs
 end
 
-function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float64, σ²::Float64, dt::Float64, t_end::Float64, idx_sim::Int, dirpath::String, lk::T) where {T<:Base.AbstractLock}
+function save_JLD(xs::Matrix{Float64}, N::Int, K::Int, J::Float64, σ²::Float64, dt::Float64, t_end::Float64, idx_sim::Int, dirpath::String, lk::TI) where {TI<:Base.AbstractLock}
     lock(lk) do
         @save dirpath*"/sol_N-$(N)_K$(K)_J-$(J)_s2-$(σ²)_dt-$(dt)_T-$(t_end)_$(idx_sim).jld" xs
     end
